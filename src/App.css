@@ -1,0 +1,53 @@
+.app {
+  min-height: 100vh;
+  background-color: #f4f5f7;
+  padding: 20px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+.app-header h1 {
+  color: #172b4d;
+  font-size: 24px;
+  margin: 0;
+}
+
+.add-task-button {
+  background-color: #0052cc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-task-button:hover {
+  background-color: #0047b3;
+}
+
+.board {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  overflow-x: auto;
+  min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding: 10px;
+  }
+
+  .board {
+    flex-direction: column;
+    padding: 10px;
+  }
+}
