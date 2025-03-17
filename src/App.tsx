@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { v4 as uuidv4 } from 'uuid';
 import { Board, Task } from './types';
 import BoardComponent from './components/Board';
@@ -29,109 +30,103 @@ const initialBoard: Board = {
 };
 
 const App: React.FC = () => {
-  const [board, setBoard] = useState<Board>(initialBoard);
+  const [board, setBoard] = useState<Board>(() => {
+    const savedBoard = localStorage.getItem('board');
+    if (savedBoard) {
+      try {
+        const parsedBoard = JSON.parse(savedBoard);
+        if (!parsedBoard.tasks || !parsedBoard.columns || !parsedBoard.columnOrder) {
+          console.error('Invalid board structure in localStorage');
+          return initialBoard;
+        }
+        const isValid = Object.values(parsedBoard.columns).every((column: any) => {
+          return column.taskIds.every((taskId: string) => parsedBoard.tasks[taskId]);
+        });
+        if (!isValid) {
+          console.error('Inconsistent task IDs found in localStorage');
+          return initialBoard;
+        }
+        return parsedBoard;
+      } catch (error) {
+        console.error('Error parsing saved board:', error);
+        return initialBoard;
+      }
+    }
+    return initialBoard;
+  });
+  
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    const savedBoard = localStorage.getItem('board');
-    if (savedBoard) {
-      setBoard(JSON.parse(savedBoard));
+    try {
+      localStorage.setItem('board', JSON.stringify(board));
+    } catch (error) {
+      console.error('Error saving board to localStorage:', error);
     }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('board', JSON.stringify(board));
   }, [board]);
 
-  const onDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
-
-    if (!destination) return;
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
-
-    const sourceColumn = board.columns[source.droppableId];
-    const destColumn = board.columns[destination.droppableId];
-
-    // Moving within the same column
-    if (sourceColumn === destColumn) {
-      const newTaskIds = Array.from(sourceColumn.taskIds);
-      newTaskIds.splice(source.index, 1);
-      newTaskIds.splice(destination.index, 0, draggableId);
-
-      const newColumn = {
-        ...sourceColumn,
-        taskIds: newTaskIds,
-      };
-
-      setBoard({
-        ...board,
-        columns: {
-          ...board.columns,
-          [newColumn.id]: newColumn,
-        },
-      });
-      return;
-    }
-
-    // Moving to different column
-    const sourceTaskIds = Array.from(sourceColumn.taskIds);
-    sourceTaskIds.splice(source.index, 1);
-    const newSourceColumn = {
-      ...sourceColumn,
-      taskIds: sourceTaskIds,
-    };
-
-    const destTaskIds = Array.from(destColumn.taskIds);
-    destTaskIds.splice(destination.index, 0, draggableId);
-    const newDestColumn = {
-      ...destColumn,
-      taskIds: destTaskIds,
-    };
-
-    // Update task status
-    const task = board.tasks[draggableId];
-    const newStatus = destColumn.title.toLowerCase().replace(' ', '-') as Task['status'];
+  const moveTask = (taskId: string, sourceColumnId: string, targetColumnId: string, targetIndex: number) => {
+    const sourceColumn = board.columns[sourceColumnId];
+    const targetColumn = board.columns[targetColumnId];
     
+    if (!sourceColumn || !targetColumn) return;
+
+    const sourceTaskIds = Array.from(sourceColumn.taskIds);
+    const targetTaskIds = Array.from(targetColumn.taskIds);
+    const sourceIndex = sourceTaskIds.indexOf(taskId);
+
+    if (sourceIndex === -1) return;
+
+    // Remove from source column
+    sourceTaskIds.splice(sourceIndex, 1);
+
+    // Add to target column
+    targetTaskIds.splice(targetIndex, 0, taskId);
+
+    const task = board.tasks[taskId];
+    const newStatus = targetColumn.title.toLowerCase().replace(' ', '-') as Task['status'];
+
     setBoard({
       ...board,
       tasks: {
         ...board.tasks,
-        [draggableId]: {
+        [taskId]: {
           ...task,
           status: newStatus,
         },
       },
       columns: {
         ...board.columns,
-        [newSourceColumn.id]: newSourceColumn,
-        [newDestColumn.id]: newDestColumn,
+        [sourceColumnId]: {
+          ...sourceColumn,
+          taskIds: sourceTaskIds,
+        },
+        [targetColumnId]: {
+          ...targetColumn,
+          taskIds: targetTaskIds,
+        },
       },
     });
   };
 
   const addTask = (task: Omit<Task, 'id' | 'createdAt' | 'status'>) => {
+    const taskId = uuidv4();
     const newTask: Task = {
       ...task,
-      id: uuidv4(),
+      id: taskId,
       status: 'todo',
       createdAt: new Date().toISOString(),
     };
 
     const column = board.columns['column-1'];
     const newTaskIds = Array.from(column.taskIds);
-    newTaskIds.push(newTask.id);
+    newTaskIds.push(taskId);
 
-    setBoard({
+    const newState = {
       ...board,
       tasks: {
         ...board.tasks,
-        [newTask.id]: newTask,
+        [taskId]: newTask,
       },
       columns: {
         ...board.columns,
@@ -140,25 +135,27 @@ const App: React.FC = () => {
           taskIds: newTaskIds,
         },
       },
-    });
+    };
+
+    setBoard(newState);
     setIsFormOpen(false);
   };
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>React Jira Board</h1>
-        <button className="add-task-button" onClick={() => setIsFormOpen(true)}>
-          Add Task
-        </button>
-      </header>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <BoardComponent board={board} />
-      </DragDropContext>
-      {isFormOpen && (
-        <AddTaskForm onSubmit={addTask} onClose={() => setIsFormOpen(false)} />
-      )}
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      <div className="app">
+        <header className="app-header">
+          <h1>React Jira Board</h1>
+          <button className="add-task-button" onClick={() => setIsFormOpen(true)}>
+            Add Task
+          </button>
+        </header>
+        <BoardComponent board={board} onMoveTask={moveTask} />
+        {isFormOpen && (
+          <AddTaskForm onSubmit={addTask} onClose={() => setIsFormOpen(false)} />
+        )}
+      </div>
+    </DndProvider>
   );
 };
 

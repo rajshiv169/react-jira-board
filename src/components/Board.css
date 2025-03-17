@@ -1,0 +1,8 @@
+.board {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: calc(100vh - 80px);
+  overflow-x: auto;
+  background-color: #f4f5f7;
+} 

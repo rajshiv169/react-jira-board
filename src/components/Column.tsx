@@ -1,5 +1,5 @@
 import React from 'react';
-import { Droppable } from 'react-beautiful-dnd';
+import { useDrop } from 'react-dnd';
 import { Column as ColumnType, Task } from '../types';
 import TaskCard from './TaskCard';
 import './Column.css';
@@ -7,26 +7,37 @@ import './Column.css';
 interface ColumnProps {
   column: ColumnType;
   tasks: Task[];
+  onMoveTask: (taskId: string, sourceColumnId: string, targetColumnId: string, targetIndex: number) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ column, tasks }) => {
+const Column: React.FC<ColumnProps> = ({ column, tasks, onMoveTask }) => {
+  const [{ isOver }, drop] = useDrop({
+    accept: 'TASK',
+    drop: (item: { id: string, sourceColumnId: string }) => {
+      onMoveTask(item.id, item.sourceColumnId, column.id, tasks.length);
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  });
+
   return (
     <div className="column">
       <h2 className="column-title">{column.title}</h2>
-      <Droppable droppableId={column.id}>
-        {(provided, snapshot) => (
-          <div
-            className={`task-list ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {tasks.map((task, index) => (
-              <TaskCard key={task.id} task={task} index={index} />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      <div
+        ref={drop}
+        className={`task-list ${isOver ? 'dragging-over' : ''}`}
+      >
+        {tasks.map((task, index) => (
+          <TaskCard 
+            key={task.id} 
+            task={task} 
+            index={index}
+            sourceColumnId={column.id}
+            onMoveTask={onMoveTask}
+          />
+        ))}
+      </div>
     </div>
   );
 };
