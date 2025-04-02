@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/react-jira-board/static/css/main.b4ef7bd9.css",
+    "main.js": "/react-jira-board/static/js/main.ab27ea51.js",
+    "index.html": "/react-jira-board/index.html",
+    "main.b4ef7bd9.css.map": "/react-jira-board/static/css/main.b4ef7bd9.css.map",
+    "main.ab27ea51.js.map": "/react-jira-board/static/js/main.ab27ea51.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b4ef7bd9.css",
+    "static/js/main.ab27ea51.js"
+  ]
+}
