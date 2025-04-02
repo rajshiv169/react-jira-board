@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/react-jira-board/static/css/main.b4ef7bd9.css",
-    "main.js": "/react-jira-board/static/js/main.ab27ea51.js",
+    "main.css": "/react-jira-board/static/css/main.ee770fc5.css",
+    "main.js": "/react-jira-board/static/js/main.55309adc.js",
     "index.html": "/react-jira-board/index.html",
-    "main.b4ef7bd9.css.map": "/react-jira-board/static/css/main.b4ef7bd9.css.map",
-    "main.ab27ea51.js.map": "/react-jira-board/static/js/main.ab27ea51.js.map"
+    "main.ee770fc5.css.map": "/react-jira-board/static/css/main.ee770fc5.css.map",
+    "main.55309adc.js.map": "/react-jira-board/static/js/main.55309adc.js.map"
   },
   "entrypoints": [
-    "static/css/main.b4ef7bd9.css",
-    "static/js/main.ab27ea51.js"
+    "static/css/main.ee770fc5.css",
+    "static/js/main.55309adc.js"
   ]
 }
