@@ -2,7 +2,7 @@
   "name": "react-jira-board",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://shivrajbhagat.github.io/react-jira-board",
+  "homepage": "https://rajshiv169.github.io/react-jira-board",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

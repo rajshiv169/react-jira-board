@@ -72,3 +72,38 @@
 .task-card:hover {
   background-color: #f4f5f7;
 }
+
+.task-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-button,
+.delete-button {
+  background: none;
+  border: none;
+  color: #6b778c;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  border-radius: 3px;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.task-card:hover .edit-button,
+.task-card:hover .delete-button {
+  opacity: 1;
+}
+
+.edit-button:hover {
+  background-color: #ebecf0;
+  color: #0052cc;
+}
+
+.delete-button:hover {
+  background-color: #ebecf0;
+  color: #de350b;
+}

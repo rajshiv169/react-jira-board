@@ -72,13 +72,18 @@ const App: React.FC = () => {
     if (!sourceColumn || !targetColumn) return;
 
     const sourceTaskIds = Array.from(sourceColumn.taskIds);
-    const targetTaskIds = Array.from(targetColumn.taskIds);
+    const targetTaskIds = sourceColumnId === targetColumnId ? sourceTaskIds : Array.from(targetColumn.taskIds);
     const sourceIndex = sourceTaskIds.indexOf(taskId);
 
     if (sourceIndex === -1) return;
 
     // Remove from source column
     sourceTaskIds.splice(sourceIndex, 1);
+
+    // If moving within the same column, adjust target index if it's after the source index
+    if (sourceColumnId === targetColumnId && targetIndex > sourceIndex) {
+      targetIndex--;
+    }
 
     // Add to target column
     targetTaskIds.splice(targetIndex, 0, taskId);
@@ -103,7 +108,7 @@ const App: React.FC = () => {
         },
         [targetColumnId]: {
           ...targetColumn,
-          taskIds: targetTaskIds,
+          taskIds: sourceColumnId === targetColumnId ? targetTaskIds : targetTaskIds,
         },
       },
     });
@@ -141,6 +146,49 @@ const App: React.FC = () => {
     setIsFormOpen(false);
   };
 
+  const deleteTask = (taskId: string) => {
+    // Find which column contains the task
+    const columnId = Object.keys(board.columns).find(colId => 
+      board.columns[colId].taskIds.includes(taskId)
+    );
+
+    if (!columnId || !board.columns[columnId]) return;
+
+    const column = board.columns[columnId];
+    const newTaskIds = column.taskIds.filter(id => id !== taskId);
+    
+    const newTasks = { ...board.tasks };
+    delete newTasks[taskId];
+
+    setBoard({
+      ...board,
+      tasks: newTasks,
+      columns: {
+        ...board.columns,
+        [columnId]: {
+          ...column,
+          taskIds: newTaskIds,
+        },
+      },
+    });
+  };
+
+  const updateTask = (taskId: string, updatedTask: Partial<Task>) => {
+    const task = board.tasks[taskId];
+    if (!task) return;
+
+    setBoard({
+      ...board,
+      tasks: {
+        ...board.tasks,
+        [taskId]: {
+          ...task,
+          ...updatedTask,
+        },
+      },
+    });
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="app">
@@ -150,7 +198,12 @@ const App: React.FC = () => {
             Add Task
           </button>
         </header>
-        <BoardComponent board={board} onMoveTask={moveTask} />
+        <BoardComponent 
+          board={board} 
+          onMoveTask={moveTask} 
+          onDeleteTask={deleteTask}
+          onUpdateTask={updateTask}
+        />
         {isFormOpen && (
           <AddTaskForm onSubmit={addTask} onClose={() => setIsFormOpen(false)} />
         )}

@@ -1,14 +1,16 @@
 import React from 'react';
-import { Board as BoardType } from '../types';
+import { Board as BoardType, Task } from '../types';
 import Column from './Column';
 import './Board.css';
 
 interface BoardProps {
   board: BoardType;
   onMoveTask: (taskId: string, sourceColumnId: string, targetColumnId: string, targetIndex: number) => void;
+  onDeleteTask: (taskId: string) => void;
+  onUpdateTask: (taskId: string, updatedTask: Partial<Task>) => void;
 }
 
-const Board: React.FC<BoardProps> = ({ board, onMoveTask }) => {
+const Board: React.FC<BoardProps> = ({ board, onMoveTask, onDeleteTask, onUpdateTask }) => {
   return (
     <div className="board">
       {board.columnOrder.map((columnId) => {
@@ -20,6 +22,8 @@ const Board: React.FC<BoardProps> = ({ board, onMoveTask }) => {
             column={column} 
             tasks={tasks} 
             onMoveTask={onMoveTask}
+            onDeleteTask={onDeleteTask}
+            onUpdateTask={onUpdateTask}
           />
         );
       })}

@@ -1,25 +1,41 @@
 # React Jira Board
 
-A Jira-like task management board built with React and TypeScript. This project implements a drag-and-drop kanban board with local storage persistence.
+A Jira-like task management board built with React and TypeScript. This project implements a drag-and-drop kanban board with local storage persistence. It's a client-side only application, perfect for personal task management without requiring any backend or authentication.
 
 ![React Jira Board](https://raw.githubusercontent.com/rajshiv169/react-jira-board/main/docs/screenshot.png)
 
 ## Features
 
 - 📋 Drag and drop tasks between columns (Todo, In Progress, Done)
+- ✏️ Edit task details (title, description, priority)
+- 🎯 Priority-based task sorting within columns
+- 🗑️ Delete tasks with a single click
 - 🎨 Modern and clean UI inspired by Jira
-- 🔄 Persistent storage using localStorage
+- 🔄 Client-side storage using localStorage
 - 🏷️ Task priority levels (Low, Medium, High)
 - 📱 Responsive design for all devices
 - ⚡ Fast and smooth animations
 - 🔍 TypeScript for better code quality
 
+## Demo
+
+🔗 **Live Demo**: [React Jira Board](https://rajshiv169.github.io/react-jira-board/)
+
+Try out the live demo to experience the following features:
+- Create new tasks with different priority levels
+- Edit existing tasks (title, description, priority)
+- Drag and drop tasks between columns
+- Sort tasks by priority within columns
+- Delete tasks with a single click
+- Local storage persistence (tasks are saved in your browser)
+- Responsive design that works on both desktop and mobile
+
 ## Tech Stack
 
 - React 18
 - TypeScript
-- react-beautiful-dnd for drag and drop
-- Local Storage for data persistence
+- React DnD for drag and drop functionality
+- Local Storage for client-side data persistence
 - CSS3 for styling
 
 ## Getting Started
@@ -67,7 +83,9 @@ The application will be available at \`http://localhost:3000\`
 ### Managing Tasks
 
 - **Move Tasks**: Drag and drop tasks between columns
-- **View Details**: Click on a task to view its full details
+- **Edit Tasks**: Click the edit button (✎) to modify task details
+- **Delete Tasks**: Click the delete button (×) to remove a task
+- **Priority Sorting**: Tasks are automatically sorted by priority within each column
 - **Priority Levels**: Tasks are color-coded by priority:
   - 🔴 High: Red
   - 🟡 Medium: Yellow
@@ -75,7 +93,11 @@ The application will be available at \`http://localhost:3000\`
 
 ### Data Persistence
 
-All changes are automatically saved to your browser's local storage. Your tasks will persist even after refreshing the page or closing the browser.
+This is a client-side only application. All data is stored locally in your browser's localStorage. This means:
+- Your tasks are private and only accessible on your current browser
+- Data persists across page refreshes and browser restarts
+- Tasks are not shared between different browsers or devices
+- Clearing browser data will remove all tasks
 
 ## Project Structure
 
@@ -85,6 +107,7 @@ react-jira-board/
 │   ├── components/
 │   │   ├── AddTaskForm.tsx
 │   │   ├── AddTaskForm.css
+│   │   ├── EditTaskForm.tsx
 │   │   ├── Board.tsx
 │   │   ├── Board.css
 │   │   ├── Column.tsx
@@ -112,13 +135,24 @@ react-jira-board/
 
 ## Future Enhancements
 
-- [ ] Task editing functionality
+- [x] Task editing functionality
+- [x] Priority-based sorting
 - [ ] Multiple boards support
-- [ ] User authentication
+- [ ] Backend integration with user authentication
 - [ ] Task filtering and search
 - [ ] Task labels and categories
 - [ ] Due dates and reminders
-- [ ] Collaborative features
+- [ ] Collaborative features (requires backend implementation)
+- [ ] Data export/import functionality
+- [ ] Cross-device synchronization
+
+## Current Limitations
+
+- Client-side only: all data is stored in browser's localStorage
+- No user authentication or multi-user support
+- Data is limited to a single device/browser
+- No data backup or synchronization features
+- Storage capacity limited by browser's localStorage limits
 
 ## License
 
@@ -128,4 +162,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Inspired by Atlassian's Jira
 - Built with React and TypeScript
-- Uses react-beautiful-dnd for drag and drop functionality
+- Uses React DnD for drag and drop functionality
